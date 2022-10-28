@@ -1,0 +1,18 @@
+{
+  "name": "fastly-real-time-api_to_prometheus",
+  "version": "1.0.0",
+  "description": "Call the listner to call the Fastly Real Time API and transform the result into a Prometheus counters and histogram format",
+  "author": "Edouard Berteloot",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "start.dev": "nodemon"
+  },
+  "dependencies": {
+    "express": "^4.16.1",
+    "command-line-args": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.16"
+  }
+}
