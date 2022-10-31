@@ -4,7 +4,7 @@ Documentation=https://github.com/edouardbe/fastly-real-time-api_to_prometheus
 
 [Service]
 Type=simple
-ExecStart=node /usr/lib/fastly-real-time-api_to_prometheus/nodejs/main.js --configuration-file=/etc/fastly-real-time-api_to_prometheus/config.txt
+ExecStart=node /usr/local/lib/fastly-real-time-api_to_prometheus/nodejs/main.js --configuration-file=/etc/fastly-real-time-api_to_prometheus/config.txt
 
 [Install]
 WantedBy=multi-user.target
