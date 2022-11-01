@@ -7,6 +7,10 @@ log () {
   fi
 }
 
+error () {
+  >&2 echo "$1"
+}
+
 FRTATP_OUTPUT_DIR="."
 FRTATP_OUTPUT_FILE="fastly-real-time-api-to-prometheus.data"
 FRTATP_IGNORE_METRICS=""
@@ -112,12 +116,12 @@ fi
 log "arguments checking..."
 
 if [ -z "$FRTATP_FASTLY_KEY" ]; then
-    echo "ERROR: FRTATP_FASTLY_KEY can't be empty, set it up as an environment variable, in the a config file or with --fastly-key"
+    error "FRTATP_FASTLY_KEY can't be empty, set it up as an environment variable, in the a config file or with --fastly-key"
     exit 1
 fi
 
 if [ -z "$FRTATP_FASTLY_SERVICE_ID" ]; then
-    echo "ERROR: FRTATP_FASTLY_SERVICE_ID can't be empty, set it up as an environment variable, in the a config file or with --fastly-service-id"
+    error "FRTATP_FASTLY_SERVICE_ID can't be empty, set it up as an environment variable, in the a config file or with --fastly-service-id"
     exit 1
 fi
 
@@ -130,21 +134,36 @@ TEMP_NEW_REAL_TIME_DATA_FILE="${FRTATP_OUTPUT_FILE}.new.tmp"
 
 # PoPs
 log "fetching Fastly PoPs"
-FASTLY_POPS=$(curl -s --location --request GET 'https://api.fastly.com/datacenters' \
+FASTLY_RESP=$(curl -w "%{http_code}" -s --location --request GET 'https://api.fastly.com/datacenters' \
 --header 'Accept: application/json' \
---header "Fastly-Key: ${FRTATP_FASTLY_KEY}" |jq --compact-output --raw-output '.[] | "\(.code)>\(.group);"' |gawk '{printf "%s", $0}'|sed "s#Asia/Pacific#AP#g"|sed "s#Europe#EU#g"|sed "s#United States#US#g"|sed "s#Africa#AF#g"|sed "s#South America#SA#g")
+--header "Fastly-Key: ${FRTATP_FASTLY_KEY}")
+FASTLY_OK=$(echo $FASTLY_RESP|grep -o "200")
+
+if [ -z $FASTLY_OK ]; then
+  error "$FASTLY_RESP. Check your FASTLY API Key."
+  exit 1
+fi
+
+FASTLY_POPS=$(echo $FASTLY_RESP| sed "s/200//g" |jq --compact-output --raw-output '.[] | "\(.code)>\(.group);"' |gawk '{printf "%s", $0}'|sed "s#Asia/Pacific#AP#g"|sed "s#Europe#EU#g"|sed "s#United States#US#g"|sed "s#Africa#AF#g"|sed "s#South America#SA#g")
 if [ -z $FASTLY_POPS ]; then
-  echo "ERROR: issue while fetching Fastly PoPs. Exit"
+  error "issue while fetching Fastly PoPs. Exit"
   exit 1
 fi
 log "Fastly PoPs fetched"
 
 # Fresh real-time data
 log "fetching Fastly Real-time data"
-curl -s --location --request GET "https://rt.fastly.com/v1/channel/${FRTATP_FASTLY_SERVICE_ID}/ts/h" --header "Fastly-Key: ${FRTATP_FASTLY_KEY}" |jq --raw-output '.Data[] | .recorded, .datacenter' > "${FRTATP_OUTPUT_DIR}/${TEMP_NEW_REAL_TIME_DATA_FILE}"
+FASTLY_RESP=$(curl -w "%{http_code}" -s --location --request GET "https://rt.fastly.com/v1/channel/${FRTATP_FASTLY_SERVICE_ID}/ts/h" --header "Fastly-Key: ${FRTATP_FASTLY_KEY}")
+FASTLY_OK=$(echo $FASTLY_RESP|grep -o -E "200$")
+
+if [ -z $FASTLY_OK ]; then
+  error "$FASTLY_RESP. Check your Fastly Service Id."
+  exit 1
+fi
+echo $FASTLY_RESP|sed -E "s/200$//g" |jq --raw-output '.Data[] | .recorded, .datacenter' > "${FRTATP_OUTPUT_DIR}/${TEMP_NEW_REAL_TIME_DATA_FILE}"
 NB_LINES=$(cat "${FRTATP_OUTPUT_DIR}/${TEMP_NEW_REAL_TIME_DATA_FILE}"|wc -l)
 if [ "$NB_LINES" -eq 0 ]; then
-  echo "ERROR: Fastly real-time API call returns nothing. Exit"
+  error "Fastly real-time API call returns nothing. Exit"
   exit 1
 fi
 log "Fastly Real-time data fetched"

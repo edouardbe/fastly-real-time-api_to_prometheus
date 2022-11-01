@@ -1,22 +1,29 @@
 # set your Fastly API key here or by environment variable. Required
-#FRTATP_FASTLY_KEY=
+FRTATP_FASTLY_KEY=
 
 # set your Fastly Service ID here or by environment variable. Required
-#FRTATP_FASTLY_SERVICE_ID=
+FRTATP_FASTLY_SERVICE_ID=
+
+# set the port for the nodejs express server to listen to. Default 9145
+#FRTATP_NODEJS_PORT=9145
+
+# set the path for the nodejs express server to listen to. Default /metrics
+#FRTATP_NODEJS_PATH=/metrics
 
 # set verbose mode (0 or 1)
-FRTATP_VERBOSE=1
+FRTATP_VERBOSE=0
 
 # set the logs directory (default /var/log)
 #FRTATP_LOGS_DIR=/var/log
+#FRTATP_LOGS_DIR=.
 
 # set the logs file (default fastly-real-time-api-to-prometheus.log)
-#FRTATP_LOGS_DIR=fastly-real-time-api-to-prometheus.log
+#FRTATP_LOGS_FILE=fastly-real-time-api-to-prometheus.log
 
-# set the directory where to write the data for prometheus. Optional. current directory will be used by default
+# set the directory where to write the data for prometheus. Optional. Default current execution directory
 #FRTATP_OUTPUT_DIR=.
 
-# set the filenmae where to write the data for prometheus. Optional. fastly-real-time-api-to-prometheus.data will be used by default
+# set the filenmae where to write the data for prometheus. Optional. Default fastly-real-time-api-to-prometheus.data
 #FRTATP_OUTPUT_FILE="fastly-real-time-api-to-prometheus.data"
 
 # set the list of metrics to ignore from Fastly real-time api, if you are not interested by them. Optional.

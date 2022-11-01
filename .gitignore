@@ -1,3 +1,4 @@
 config.txt
 *node_modules/
 *.deb
+*.log
