@@ -17,8 +17,8 @@ FRTATP_FASTLY_KEY=ABC
 FRTATP_FASTLY_SERVICE_ID=DEF
 # set the directory where to write the data for prometheus. Optional. current directory will be used by default
 #FRTATP_OUTPUT_DIR=.
-# set the filenmae where to write the data for prometheus. Optional. fastly-real-time-api_to_prometheus.data will be used by default
-#FRTATP_OUTPUT_FILE="fastly-real-time-api_to_prometheus.data"
+# set the filenmae where to write the data for prometheus. Optional. fastly-real-time-api-to-prometheus.data will be used by default
+#FRTATP_OUTPUT_FILE="fastly-real-time-api-to-prometheus.data"
 # set the list of metrics to ignore from Fastly real-time api, if you are not interested by them. Optional.
 FRTATP_IGNORE_METRICS="attack_;compute_;fanout_;imgopto;imgvideo;log;otfp;waf;websocket;billed;deliver_sub;error_;fetch_;hash_sub_;hit_sub_;object_size;pass_sub;predeliver_sub;prehash_sub;recv_sub;synth;video"
 ```

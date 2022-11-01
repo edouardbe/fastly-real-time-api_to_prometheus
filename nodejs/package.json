@@ -1,5 +1,5 @@
 {
-  "name": "fastly-real-time-api_to_prometheus",
+  "name": "fastly-real-time-api-to-prometheus",
   "version": "1.0.0",
   "description": "Call the listner to call the Fastly Real Time API and transform the result into a Prometheus counters and histogram format",
   "author": "Edouard Berteloot",

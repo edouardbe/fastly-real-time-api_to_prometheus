@@ -1,5 +1,0 @@
-{
-  "dependencies": {
-    "fastly-real-time-api_to_prometheus": "file:../../../../usr/local/lib/fastly-real-time-api_to_prometheus/nodejs"
-  }
-}

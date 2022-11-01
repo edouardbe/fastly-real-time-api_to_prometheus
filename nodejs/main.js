@@ -10,11 +10,13 @@ const optionDefinitions = [
     { name: 'bypass-initial-test', type: String  },
     { name: 'configuration-file', type: String },
     { name: 'output-dir', type: String, defaultValue: os.tmpdir() },
-    { name: 'output-file', type: String, defaultValue: "fastly-real-time-api_to_prometheus.data" },
+    { name: 'output-file', type: String, defaultValue: "fastly-real-time-api-to-prometheus.data" },
     { name: 'verbose', alias: 'v', type: Boolean , defaultValue: false },
+    { name: 'logs-dir', type: String, defaultValue: "/var/log"},
+    { name: 'logs-file', type: String, defaultValue: "fastly-real-time-api-to-prometheus.log" },
     { name: 'port', type: Number, defaultValue: 9145 },
     { name: 'path', type: String, defaultValue: "/metrics" },
-    { name: 'bash-script-location', type: String , defaultValue: "../fastly-real-time-api_to_prometheus.sh" }
+    { name: 'bash-script-location', type: String , defaultValue: "../fastly-real-time-api-to-prometheus.sh" }
   ]
 
 const options = commandLineArgs(optionDefinitions)
@@ -62,9 +64,9 @@ if ( options["bypass-initial-test"] === undefined) {
     // Some checks, try to run the script
     log("Execute a dry run call as an initial test");
     var test_dir=os.tmpdir();
-    var test_file="fastly-real-time-api_to_prometheus.test"
+    var test_file="fastly-real-time-api-to-prometheus.test"
     callScript(test_dir, test_file ,(code, error) => {
-        fs.rmSync(`${test_dir}/${test_file}`, {force:true})
+        fs.unlink(`${test_dir}/${test_file}`, (err) => {console.log(err)})
         if ( code != 0 || error !== "") {
             throw new Error(`Error testing the script: code: ${code}, error: ${error}`); 
         } else {

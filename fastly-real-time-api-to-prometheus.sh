@@ -8,7 +8,7 @@ log () {
 }
 
 FRTATP_OUTPUT_DIR="."
-FRTATP_OUTPUT_FILE="fastly-real-time-api_to_prometheus.data"
+FRTATP_OUTPUT_FILE="fastly-real-time-api-to-prometheus.data"
 FRTATP_IGNORE_METRICS=""
 
 while [ $# -gt 0 ]; do

@@ -1,5 +1,5 @@
-move file to /usr/lib/fastly-real-time-api_to_prometheus/nodejs/main.js
-create dir /etc/fastly-real-time-api_to_prometheus
-create file /etc/fastly-real-time-api_to_prometheus/config.txt
+move file to /usr/lib/fastly-real-time-api-to-prometheus/nodejs/main.js
+create dir /etc/fastly-real-time-api-to-prometheus
+create file /etc/fastly-real-time-api-to-prometheus/config.txt
 put the config in it
 

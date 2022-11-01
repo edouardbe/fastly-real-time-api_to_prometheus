@@ -9,7 +9,7 @@ npm start -- --configuration-file=../config.txt -v
 
 options :
 - --configuration-file= : to specify the configuration file. Recommended to set up the Fastly Api Key and Fastly Service.
-- --bash-script-location : to specify where the bash script is located. Default is "../fastly-real-time-api_to_prometheus.sh" 
+- --bash-script-location : to specify where the bash script is located. Default is "../fastly-real-time-api-to-prometheus.sh" 
 - --port= : to override the default port 9145 that nodejs will listen to
 - --path= : to override the default path /metrics that nodejs will listen to
 - --verbose|-v : if present, turn on the verbose mode.

@@ -1,0 +1,10 @@
+#!/bin/bash
+# This `DEBIAN/postinst` script is run post-installation
+echo "###############"
+echo "don't forget to set up the FRTATP_FASTLY_KEY and FRTATP_FASTLY_SERVICE_ID either in (etc)/(configuration_file) or as environment variables"
+echo "you can copy/paste the (etc)/(sample_configuration_file) into (etc)/(configuration_file) and change the values"
+echo "more info at https://github.com/edouardbe/fastly-real-time-api-to-prometheus"
+echo "to start the service: sudo service (name) start"
+echo "to check the status ot the service: sudo service (name) status"
+echo "to stop the service: sudo service (name) stop"
+echo "###############"
