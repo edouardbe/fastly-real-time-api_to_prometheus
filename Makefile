@@ -37,25 +37,3 @@ create_deb_package:
 	chmod 775 $(package)/DEBIAN/postinst
 	dpkg-deb --build --root-owner-group $(package)	
 	rm -fr $(package)
-
-install:
-	mkdir -p /usr/local/lib/fastly-real-time-api-to-prometheus
-	cp ./fastly-real-time-api-to-prometheus.sh /usr/local/lib/fastly-real-time-api-to-prometheus/fastly-real-time-api-to-prometheus.sh
-	mkdir -p /usr/local/lib/fastly-real-time-api-to-prometheus/nodejs/
-	cp -R ./nodejs/* /usr/local/lib/fastly-real-time-api-to-prometheus/nodejs/
-	mkdir -p /etc/fastly-real-time-api-to-prometheus/
-	cp -i ./sample_config.txt /etc/fastly-real-time-api-to-prometheus/config.txt
-	FASTLY_API_KEY ?= $(shell bash -c 'read -p "FASTLY_API_KEY: " FASTLY_SERVICE_ID; echo $$FASTLY_API_KEY')
-	FASTLY_SERVICE_ID ?= $(shell bash -c 'read -s -p "FASTLY_SERVICE_ID: " FASTLY_SERVICE_ID; echo $$FASTLY_SERVICE_ID')
-	@echo "SET UP THE VALUE OF FASTLY API KEY AND SERVICE ID IN /etc/fastly-real-time-api-to-prometheus/config.txt"
-	cp -i ./service/fastly-real-time-api-to-prometheus.service /lib/systemd/system/fastly-real-time-api-to-prometheus.service
-	apt install nodejs npm jq
-	cd /usr/local/lib/fastly-real-time-api-to-prometheus/nodejs/ && npm install
-	systemctl start fastly-real-time-api-to-prometheus
-	
-clean:
-	systemctl stop fastly-real-time-api-to-prometheus
-	systemctl daemon-reload
-	rm -fr /usr/local/lib/fastly-real-time-api-to-prometheus/
-	rm -fr /etc/fastly-real-time-api-to-prometheus/
-	rm -fr /lib/systemd/system/fastly-real-time-api-to-prometheus.service

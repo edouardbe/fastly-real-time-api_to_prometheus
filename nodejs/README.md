@@ -5,6 +5,8 @@ the advantage of using the node js version is that you will let your Prometheus 
 ie.
 ```
 npm start -- --configuration-file=../config.txt -v
+or
+node main.js --configuration-file=../config.txt -v
 ```
 
 options :

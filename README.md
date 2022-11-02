@@ -1,29 +1,26 @@
 # Fastly Real-time API to Prometheus
 
-The project aims to call the Fastly Real-time API and transform the data into a format for Proemetheus, with counters and histograms.
+The project aims to call the Fastly Real-time API and transform the data into a format for Prometheus, with counters and histograms.
+
+Initially, the transformation was done by a bash script using gawk, and a cron to call the script every minute. But it required a local HTTP server like Apache2 to render the file to Prometheus server.
+
+First evolution had been to
+- add a NodeJS Express server that listen to a port (9145) and path (metrics)to call the bash script and transform Fastly Real-time data into Prometheus data.
+- create a service to start/status/stop
+- add a Makefile to generate a Debian Package.
 
 ## Fastly Real-time API doc
 See https://developer.fastly.com/reference/api/metrics-stats/realtime/
 
 ## Minimum requirement
-The Fastly Real-time API needs a *Fastly Api Key* and a *Service Id* to run properly. It's recommended to use either a configuration file or to set environment variables.
+The Fastly Real-time API needs a *Fastly Api Key* and a *Service Id* to run properly. It's recommended to put them into a configuration file 
+Set environment variables would work.
 The other variables are optional
 
-Sample configuration file
-```
-# set your Fastly API key here or by environment variable. Required
-FRTATP_FASTLY_KEY=ABC
-# set your Fastly Service ID here or by environment variable. Required
-FRTATP_FASTLY_SERVICE_ID=DEF
-# set the directory where to write the data for prometheus. Optional. current directory will be used by default
-#FRTATP_OUTPUT_DIR=.
-# set the filenmae where to write the data for prometheus. Optional. fastly-real-time-api-to-prometheus.data will be used by default
-#FRTATP_OUTPUT_FILE="fastly-real-time-api-to-prometheus.data"
-# set the list of metrics to ignore from Fastly real-time api, if you are not interested by them. Optional.
-FRTATP_IGNORE_METRICS="attack_;compute_;fanout_;imgopto;imgvideo;log;otfp;waf;websocket;billed;deliver_sub;error_;fetch_;hash_sub_;hit_sub_;object_size;pass_sub;predeliver_sub;prehash_sub;recv_sub;synth;video"
-```
+## Configuration
+see sample_config.txt
 
-For environment variables, use the same keys
+For environment variables, use the same keys as in the configuration file
 ```
 FRTATP_FASTLY_KEY
 FRTATP_FASTLY_SERVICE_ID
@@ -36,12 +33,17 @@ Note that
 - the environement variables are overidden by the values in the configuation file
 - the values in the configuration file are overidden by the arguments in the command line
 
+Note the equivalence between the Environment Variable Names and the Command Line Argument Names:
+FRTATP_FASTLY_KEY <=> --fastly-key
+FRTATP_IGNORE_METRICS <=> --ignore-metrics
+...
+
+
 ## Quick note on the Real-time API
 The Fastly Real-time API 'https://rt.fastly.com/v1/channel/${FRTATP_FASTLY_SERVICE_ID}/ts/h' returns the last 120s data, with an object per second, and sub-object for each pop. 
 
 ## Frequency to call the script
 It's recommended to call the script every 2 minutes or less, else you will loose data. If the script is called every less than 2 minutes, the seconds already treated from the previous call will be ignored.
-
 
 ## Fastly PoPs and regions
 The script will also fetch the Fastly PoPs and their Regions. Regions names are replaced by 2 letters codes (SA,EU,AF...)
@@ -117,6 +119,23 @@ FRTATP_IGNORE_METRICS="attack_;compute_;fanout_;imgopto;imgvideo;log;otfp;waf;we
 ## Cron vs Nodejs
 The Cron version will call the script at the specified cron. You will still need a webserver to serve the output file to Prometheus server
 
-The Nodejs express version will turn on a server listening to the port and path you specify, and run the script when Prometheus server calls the endpoint. It seems a better option.
+The Nodejs Express version will turn on a server listening to the port and path you specify, and run the script when Prometheus server calls the endpoint. It seems a better option.
 
-## Next steps
+## NodeJs main.js options
+
+
+## Generate the Debian Package
+from macOS, you need to install dpkg first
+```
+brew install dpkg
+```
+
+Use the Makefile by running
+```
+make create_deb_package
+```
+
+## Install the Debian Package
+```
+sudo dpkg -i fastly-real-time-api-to-prometheus_x.x-x_amd64.deb
+```
