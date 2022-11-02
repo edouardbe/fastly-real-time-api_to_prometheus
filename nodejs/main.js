@@ -15,7 +15,7 @@ const definitions = [
     { name: 'output-file', type: String, defaultIfMissing: "fastly-real-time-api-to-prometheus.data" , desc: "the output file where temporary data will be stored"  },
     { name: 'logs-dir', type: String, defaultIfMissing: "/var/log", dirCreateIfMissing: true, desc:"the directory to write the logs"},
     { name: 'logs-file', type: String, defaultIfMissing: "fastly-real-time-api-to-prometheus.log" , desc:"the file to write the logs" },
-    { name: 'nodejs-port', type: Number, defaultIfMissing: 9145, required: true, desc:"the port to listen to" },
+    { name: 'nodejs-port', type: 'integer', defaultIfMissing: 9145, required: true, desc:"the port to listen to" },
     { name: 'nodejs-path', type: String, defaultIfMissing: "/metrics", required: true,desc:"the path to listen to"},
     { name: 'bash-script-location', type: String , defaultIfMissing: "../fastly-real-time-api-to-prometheus.sh", required: true, fileMustExist: true, desc:"the location of the bach script" },
     { name: 'fastly-key', type: String, obfuscate: true, required: true, desc:"the Fastly api key to authenticate to Fastly"},

@@ -9,7 +9,7 @@
     "start.dev": "nodemon"
   },
   "dependencies": {
-    "@edouardbe/command-line-arguments-configuration-file-environment-variables-parser": "^0.0.3",
+    "@edouardbe/command-line-arguments-configuration-file-environment-variables-parser": "^0.0.4",
     "command-line-args": "^5.2.1",
     "express": "^4.16.1"
   },
