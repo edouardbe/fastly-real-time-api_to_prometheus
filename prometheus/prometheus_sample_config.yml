@@ -1,0 +1,14 @@
+global:
+  scrape_interval: 15s
+  scrape_timeout: 15s
+  evaluation_interval: 15s
+scrape_configs:
+- job_name: fastly-real-time-api-metrics
+  honor_timestamps: true
+  scrape_interval: 30s
+  scrape_timeout: 30s
+  metrics_path: /metrics
+  scheme: http
+  static_configs:
+  - targets:
+    - container_fastly-real-time-api_to_prometheus:9145
