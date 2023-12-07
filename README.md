@@ -210,3 +210,11 @@ docker run \
     -v ./prometheus/sample_config.yml:/etc/prometheus/prometheus.yml \
     prom/prometheus
 ```
+
+You will find a docker-compose.yml in the docer folder. It will start a docker container on the image above, a prometheus and a grafana instance
+From the docker folder:
+```
+docker-compose build
+docker-compose up
+docker-compose down
+```
