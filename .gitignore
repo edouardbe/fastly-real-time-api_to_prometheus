@@ -2,3 +2,5 @@ config.txt
 *node_modules/
 *.deb
 *.log
+*.DS_Store
+grafana/dashboards/fastly-real-time-api-dashboard.json

@@ -1,8 +1,8 @@
 # set your Fastly API key here or by environment variable. Required
 FRTATP_FASTLY_KEY=
 
-# set your Fastly Service ID here or by environment variable. Required
-FRTATP_FASTLY_SERVICE_ID=
+# set your Fastly Service IDs here or by environment variable. Optional
+#FRTATP_FASTLY_SERVICE_ID=
 
 # set the port for the nodejs express server to listen to. Default 9145
 #FRTATP_NODEJS_PORT=9145
@@ -27,4 +27,10 @@ FRTATP_VERBOSE=0
 #FRTATP_OUTPUT_FILE="fastly-real-time-api-to-prometheus.data"
 
 # set the list of metrics to ignore from Fastly real-time api, if you are not interested by them. Optional.
-FRTATP_IGNORE_METRICS="attack_;compute_;fanout_;imgopto;imgvideo;log;otfp;waf;websocket;billed;deliver_sub;error_;fetch_;hash_sub_;hit_sub_;object_size;pass_sub;predeliver_sub;prehash_sub;recv_sub;synth;video"
+FRTATP_IGNORE_METRICS="attack_;compute_;fanout_;imgopto;imgvideo;log;otfp;waf;websocket;video;header_size;body_size;ddos_"
+
+# set a prefix to the metrics for prometheus
+FRTATP_METRIC_PREFIX=fastly_
+
+# add a background execution every 2 minutes 
+#FRTATP_BACKGROUND_EXECUTION_PERIOD=120

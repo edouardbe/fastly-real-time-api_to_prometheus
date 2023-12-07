@@ -18,3 +18,11 @@ options :
 - --bypass-initial-test : if present, bypass the initial run to check that the script has all the info to work.
 - --output-dir= : to override the directory to write the computed data for prometheus. No need to change it by default
 - --output-file= : to override the file to write the computed data for prometheus.  No need to change it by default
+- --logs-dir= : to override the directory to write the logs
+- --logs-file= : to override the file to write the logs
+- --fastly-key= : the Fastly Key
+- --fastly-service-id= : coma separated values of the services ids if you want to filter only on these services
+- --ignore-metrics= : semi-column separated values of metrics to ignore
+- --ignore-counter-zero= : ignore the counter if the value is 0
+- --metric-prefix= : add a prefix to all metrics for prometheus
+- --background-execution-period= : nb seconds between the background execution if the endpoint is not called
