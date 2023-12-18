@@ -90,7 +90,7 @@ parsedArguments.getValuesAndSource().forEach(o => {
 const axios_instance = axios.create({
     headers: {
         'Accept': 'application/json',
-        'Fastly-Key': parsedArguments.get("fastly-key")
+        'Fastly-Key': parsedArguments.get("fastly-key").replace(/^"/, "").replace(/"$/, "")
     }
 });
 
