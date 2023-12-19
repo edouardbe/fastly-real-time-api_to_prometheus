@@ -26,3 +26,5 @@ options :
 - --ignore-counter-zero= : ignore the counter if the value is 0
 - --metric-prefix= : add a prefix to all metrics for prometheus
 - --background-execution-period= : nb seconds between the background execution if the endpoint is not called
+- --miss-latency-percentiles=25,50,75 : list the percentiles to compute. Put an empty list if you don't want the percentiles
+- --miss-latency-histograms=true : enable/disable computing the histograms

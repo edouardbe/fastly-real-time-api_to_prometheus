@@ -113,32 +113,87 @@ Prometheus Increase and Rate functions are able to manage counters down to zero.
 - At Midnight, the counters are reset, to avoid too high numbers.
 - if the file with the previous computed data can not be found, counters are reset. 
 
-## Histograms for MISS latency
-For the MISS latency, Histograms are used. To have Prometheus/Grafana working properly, all the buckets have to be specified for all PoPs/Regions/Services, and the sum and count. For the histogram, we are dependent of the buckets defined by Fastly
+
+## Summary (Percentiles/Quantiles) for MISS latency
+Fastly Real-time API provides buckets, with different spans. Depending of the bucket, the span is different
+]1;10] then span = 1
+]10;250] then span = 10
+]250;1000] then span = 50
+]1000; +inf] then span = 100
+Each key represents the upper bound of a span.
+Based on this description, the exporter can build the percentiles (integer values like 10 for 10th percentile).
+To avoid using only the upper bound of the span, if the requested percentile is in a bucket, like the bucket key 250, meaning ]240,250] with 20 requests in the bucket, the percentile will be computed using steps of the span divided by the number of requests in the bucket, ie, steps of (250-240)/20 = 0.5ms
+
+The recommendation is to use the Percentiles than the Histograms, they will be more accurate than how Prometheus computes them and CPU cheaper on Prometheus.
+
+There are 3 levels of Miss latency summary : Service, Service + Region, Service + Region + PoP. Up to you to use the appropriate one per level
 ```
-# HELP miss_histogram miss_histogram
-# TYPE miss_histogram histogram
-miss_histogram_bucket{pop="HKG",reg="AP",ser="ABC",le="40"} 6
-miss_histogram_bucket{pop="HKG",reg="AP",ser="ABC",le="50"} 7
-miss_histogram_bucket{pop="HKG",reg="AP",ser="ABC",le="60"} 7
-miss_histogram_bucket{pop="HKG",reg="AP",ser="ABC",le="70"} 7
-miss_histogram_bucket{pop="HKG",reg="AP",ser="ABC",le="80"} 7
-miss_histogram_bucket{pop="HKG",reg="AP",ser="ABC",le="90"} 7
-miss_histogram_bucket{pop="HKG",reg="AP",ser="ABC",le="100"} 7
-miss_histogram_bucket{pop="HKG",reg="AP",ser="ABC",le="110"} 10
-miss_histogram_bucket{pop="HKG",reg="AP",ser="ABC",le="120"} 13
-miss_histogram_bucket{pop="HKG",reg="AP",ser="ABC",le="130"} 13
-miss_histogram_bucket{pop="HKG",reg="AP",ser="ABC",le="140"} 14
-miss_histogram_bucket{pop="HKG",reg="AP",ser="ABC",le="150"} 17
-miss_histogram_bucket{pop="HKG",reg="AP",ser="ABC",le="160"} 18
-miss_histogram_bucket{pop="HKG",reg="AP",ser="ABC",le="170"} 18
-miss_histogram_bucket{pop="HKG",reg="AP",ser="ABC",le="180"} 20
+# HELP fastly_miss_summary_per_service fastly_miss_summary_per_service
+# TYPE fastly_miss_summary_per_service summary
+fastly_miss_summary_per_service{quantile="0.10",ser="ABC"} 151
+fastly_miss_summary_per_service{quantile="0.25",ser="ABC"} 353
 ...
-miss_histogram_bucket{pop="HKG",reg="AP",ser="ABC",le="13000"} 20
-miss_histogram_bucket{pop="HKG",reg="AP",ser="ABC",le="+Inf"} 20
-miss_histogram_sum{pop="HKG",reg="AP",ser="ABC"} 2090
-miss_histogram_count{pop="HKG",reg="AP",ser="ABC"} 20
+fastly_miss_summary_per_service_count{ser="ABC"} 446
+fastly_miss_summary_per_service_sum{ser="ABC"} 299600
+
+# HELP fastly_miss_summary_per_service_region fastly_miss_summary_per_service_region
+# TYPE fastly_miss_summary_per_service_region summary
+fastly_miss_summary_per_service_region{quantile="0.10",reg="Europe",ser="ABC"} 385
+...
+fastly_miss_summary_per_service_region_count{reg="Europe",ser="ABC"} 175
+fastly_miss_summary_per_service_region_sum{reg="Europe",ser="ABC"} 115950
+
+# HELP fastly_miss_summary_per_service_pop fastly_miss_summary_per_service_pop
+# TYPE fastly_miss_summary_per_service_pop summary
+fastly_miss_summary_per_service_pop{quantile="0.10",pop="MRS",reg="Europe",ser="ABC"} 400
+...
+fastly_miss_summary_per_service_pop_count{pop="MRS",reg="Europe",ser="ABC"} 9
+fastly_miss_summary_per_service_pop_sum{pop="MRS",reg="Europe",ser="ABC"} 5600
 ```
+
+You can specify which percentiles/quantiles you want in the configurations by
+```
+FRTATP_MISS_LATENCY_PERCENTILES=10,25,50,75,90,95
+```
+
+## Histograms for MISS latency
+The histograms can be disabled by configuration. 
+```
+FRTATP_MISS_LATENCY_HISTOGRAMS=false
+```
+
+To have Prometheus/Grafana working properly, you need either to use 
+- an histogram per level (Service, Service + Region, Service + Region + PoP) 
+- or an histogram for all (Service + Region + PoP) but it requires that all (Service + Region + PoP) tuple have the same set of buckets if you want to compute the percentiles at the Region or Service levels. It leads to a lot of redundancy to fill up the blank. And it lead to Prometheus complaining about treating too many samples.
+
+So the decision is to use 3 histograms, up to you to use the appropriate one per level
+
+```
+# HELP fastly_miss_histogram_per_service fastly_miss_histogram_per_service
+# TYPE fastly_miss_histogram_per_service histogram
+fastly_miss_histogram_per_service_bucket{ser="ABC",le="60"} 1
+fastly_miss_histogram_per_service_bucket{ser="ABC",le="70"} 4
+...
+fastly_miss_histogram_per_service_count{ser="ABC"} 446
+fastly_miss_histogram_per_service_sum{ser="ABC"} 299600
+
+# HELP fastly_miss_histogram_per_service_region fastly_miss_histogram_per_service_region
+# TYPE fastly_miss_histogram_per_service_region histogram
+fastly_miss_histogram_per_service_region_bucket{reg="Europe",ser="ABC",le="200"} 1
+fastly_miss_histogram_per_service_region_bucket{reg="Europe",ser="ABC",le="300"} 2
+...
+fastly_miss_histogram_per_service_region_count{reg="Europe",ser="ABC"} 175
+fastly_miss_histogram_per_service_region_sum{reg="Europe",ser="ABC"} 115950
+
+# HELP fastly_miss_histogram_per_service_pop fastly_miss_histogram_per_service_pop
+# TYPE fastly_miss_histogram_per_service_pop histogram
+fastly_miss_histogram_per_service_pop_bucket{pop="MRS",reg="Europe",ser="ABC",le="450"} 3
+fastly_miss_histogram_per_service_pop_bucket{pop="MRS",reg="Europe",ser="ABC",le="500"} 4
+...
+fastly_miss_histogram_per_service_pop_count{pop="MRS",reg="Europe",ser="ABC"} 9
+fastly_miss_histogram_per_service_pop_sum{pop="MRS",reg="Europe",ser="ABC"} 5600
+```
+
 
 ## Ignore metrics that you don't need
 The Fastly Real-time API returns a lot of metrics you may not be interested in. You can list the metrics patterns to ignore with a semi-column separated value list, with the beginning of the metrics name to ignore
