@@ -1,0 +1,76 @@
+{
+    "Data": [
+        {
+            "datacenter": {
+                "IAD": {
+                    "requests": 2,
+                    "hits": 0,
+                    "miss": 200,
+                    "miss_histogram": {
+                        "40": 100,
+                        "50": 100
+                    }
+                }
+            },
+            "recorded": 1703048933
+        },
+        {
+            "datacenter": {
+                "SCL": {
+                    "requests": 2,
+                    "hits": 0,
+                    "miss": 0,
+                    "miss_histogram": {
+                        "50": 100,
+                        "60": 100
+                    }
+                }
+            },
+            "recorded": 1703048934
+        },
+        {
+            "datacenter": {
+                "SCL": {
+                    "requests": 2,
+                    "hits": 0,
+                    "miss": 2,
+                    "miss_histogram": {
+                        "40": 100,
+                        "50": 100
+                    }
+                }
+            },
+            "recorded": 1703048976
+        },
+        {
+            "datacenter": {
+                "IAD": {
+                    "requests": 2,
+                    "hits": 0,
+                    "miss": 0,
+                    "miss_histogram": {
+                        "40": 100,
+                        "60": 100
+                    }
+                }
+            },
+            "recorded": 1703048977
+        },
+        {
+            "datacenter": {
+                "SCL": {
+                    "requests": 2,
+                    "hits": 0,
+                    "miss": 2,
+                    "miss_histogram": {
+                        "40": 100,
+                        "50": 100
+                    }
+                }
+            },
+            "recorded": 1703049043
+        }
+    ],
+    "Timestamp": 1703049061,
+    "AggregateDelay": 9
+}

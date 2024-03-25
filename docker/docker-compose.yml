@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  container_fastly-real-time-api_to_prometheus:
+    build: ../nodejs
+    ports:
+      - "9145:9145"
+    env_file:
+      - ../config.txt
+
+  container_prometheus:
+    image: prom/prometheus:latest
+    depends_on:
+      - container_fastly-real-time-api_to_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ../prometheus/prometheus_sample_config.yml:/etc/prometheus/prometheus.yml
+
+  container_grafana:
+    image: grafana/grafana:6.6.0
+    depends_on:
+      - container_prometheus
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../grafana/datasource.yaml:/etc/grafana/provisioning/datasources/main.yaml
+      - ../grafana/dashboard.yaml:/etc/grafana/provisioning/dashboards/main.yaml
+      - ../grafana/dashboards:/var/lib/grafana/dashboards
+

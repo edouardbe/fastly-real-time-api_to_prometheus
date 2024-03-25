@@ -1,0 +1,18 @@
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    isDefault: true
+    access: proxy
+    # Access mode - proxy (server in the UI) or direct (browser in the UI).
+    url: http://container_prometheus:9090
+    jsonData:
+      httpMethod: GET
+      manageAlerts: true
+      prometheusType: Prometheus
+      prometheusVersion: 2.44.0
+      cacheLevel: 'Low'
+      disableRecordingRules: false
+      incrementalQueryOverlapWindow: 10m
+     

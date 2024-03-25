@@ -6,14 +6,23 @@
   "main": "main.js",
   "scripts": {
     "start": "node main.js",
-    "start.dev": "nodemon"
+    "start.dev": "nodemon",
+    "test": "cross-env FRTATP_FASTLY_KEY=fake FRTATP_LOGS_DIR=/tmp FRTATP_BYPASS_INITIAL_TEST=true FRTATP_LOGS_CONSOLE=true FRTATP_VERBOSE=true FRTATP_MISS_LATENCY_PERCENTILES=10,50 FRTATP_BACKGROUND_EXECUTION_PERIOD=0 NODE_ENV=test mocha"
   },
   "dependencies": {
     "@edouardbe/command-line-arguments-configuration-file-environment-variables-parser": "^0.0.4",
+    "axios": "1.6.2",
+    "chai-http": "^4.4.0",
     "command-line-args": "^5.2.1",
-    "express": "^4.16.1"
+    "express": "^4.16.1",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.16"
+    "chai": "^4.3.10",
+    "cross-env": "^7.0.3",
+    "mocha": "^10.2.0",
+    "nock": "^13.4.0",
+    "nodemon": "^2.0.16",
+    "supertest": "^6.3.3"
   }
 }

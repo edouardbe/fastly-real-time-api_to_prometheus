@@ -1,0 +1,56 @@
+{
+    "Data": [
+        {
+            "datacenter": {
+                "SCL": {
+                    "requests": 3,
+                    "hits": 3,
+                    "miss": 0,
+                    "miss_histogram": {
+                        "50": 200,
+                        "70": 100
+                    }
+                }
+            },
+            "recorded": 1703049053
+        },
+        {
+            "datacenter": {
+                "SCL": {
+                    "requests": 3,
+                    "hits": 0,
+                    "miss": 0,
+                    "miss_histogram": {
+                        "60": 200,
+                        "70": 100
+                    }
+                }
+            },
+            "recorded": 1703049087
+        },
+        {
+            "datacenter": {
+                "SCL": {
+                    "requests": 3,
+                    "hits": 0,
+                    "miss": 0,
+                    "miss_histogram": {
+                        "50": 200,
+                        "70": 100
+                    }
+                },
+                "IAD": {
+                    "requests": 1,
+                    "hits": 0,
+                    "miss": 1,
+                    "miss_histogram": {
+                        "50": 100
+                    }
+                }
+            },
+            "recorded": 1703049090
+        }
+    ],
+    "Timestamp": 1703049103,
+    "AggregateDelay": 9
+}

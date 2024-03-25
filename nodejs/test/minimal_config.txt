@@ -1,0 +1,2 @@
+# set your Fastly API key here or by environment variable. Required
+FRTATP_FASTLY_KEY="ABC"

@@ -1,0 +1,80 @@
+# HELP services services
+# TYPE services gauge
+services{ser="ABC",name="Mock Service 1",version="29"} 1
+# HELP pops pops
+# TYPE pops gauge
+pops{pop="IAD",reg="North America"} 1
+pops{pop="SCL",reg="South America"} 1
+# HELP requests requests
+# TYPE requests counter
+requests{pop="IAD",reg="North America",ser="ABC"} 4
+requests{pop="SCL",reg="South America",ser="ABC"} 6
+# HELP miss miss
+# TYPE miss counter
+miss{pop="IAD",reg="North America",ser="ABC"} 200
+miss{pop="SCL",reg="South America",ser="ABC"} 4
+# HELP miss_histogram_per_service miss_histogram_per_service
+# TYPE miss_histogram_per_service histogram
+miss_histogram_per_service_bucket{ser="ABC",le="40"} 400
+miss_histogram_per_service_bucket{ser="ABC",le="50"} 800
+miss_histogram_per_service_bucket{ser="ABC",le="60"} 1000
+miss_histogram_per_service_bucket{ser="ABC",le="+Inf"} 1000
+miss_histogram_per_service_count{ser="ABC"} 1000
+miss_histogram_per_service_sum{ser="ABC"} 48000
+# HELP miss_histogram_per_service_region miss_histogram_per_service_region
+# TYPE miss_histogram_per_service_region histogram
+miss_histogram_per_service_region_bucket{reg="North America",ser="ABC",le="40"} 200
+miss_histogram_per_service_region_bucket{reg="North America",ser="ABC",le="50"} 300
+miss_histogram_per_service_region_bucket{reg="North America",ser="ABC",le="60"} 400
+miss_histogram_per_service_region_bucket{reg="North America",ser="ABC",le="+Inf"} 400
+miss_histogram_per_service_region_count{reg="North America",ser="ABC"} 400
+miss_histogram_per_service_region_sum{reg="North America",ser="ABC"} 19000
+miss_histogram_per_service_region_bucket{reg="South America",ser="ABC",le="40"} 200
+miss_histogram_per_service_region_bucket{reg="South America",ser="ABC",le="50"} 500
+miss_histogram_per_service_region_bucket{reg="South America",ser="ABC",le="60"} 600
+miss_histogram_per_service_region_bucket{reg="South America",ser="ABC",le="+Inf"} 600
+miss_histogram_per_service_region_count{reg="South America",ser="ABC"} 600
+miss_histogram_per_service_region_sum{reg="South America",ser="ABC"} 29000
+# HELP miss_histogram_per_service_pop miss_histogram_per_service_pop
+# TYPE miss_histogram_per_service_pop histogram
+miss_histogram_per_service_pop_bucket{pop="IAD",reg="North America",ser="ABC",le="40"} 200
+miss_histogram_per_service_pop_bucket{pop="IAD",reg="North America",ser="ABC",le="50"} 300
+miss_histogram_per_service_pop_bucket{pop="IAD",reg="North America",ser="ABC",le="60"} 400
+miss_histogram_per_service_pop_bucket{pop="IAD",reg="North America",ser="ABC",le="+Inf"} 400
+miss_histogram_per_service_pop_count{pop="IAD",reg="North America",ser="ABC"} 400
+miss_histogram_per_service_pop_sum{pop="IAD",reg="North America",ser="ABC"} 19000
+miss_histogram_per_service_pop_bucket{pop="SCL",reg="South America",ser="ABC",le="40"} 200
+miss_histogram_per_service_pop_bucket{pop="SCL",reg="South America",ser="ABC",le="50"} 500
+miss_histogram_per_service_pop_bucket{pop="SCL",reg="South America",ser="ABC",le="60"} 600
+miss_histogram_per_service_pop_bucket{pop="SCL",reg="South America",ser="ABC",le="+Inf"} 600
+miss_histogram_per_service_pop_count{pop="SCL",reg="South America",ser="ABC"} 600
+miss_histogram_per_service_pop_sum{pop="SCL",reg="South America",ser="ABC"} 29000
+# HELP miss_summary_per_service miss_summary_per_service
+# TYPE miss_summary_per_service summary
+miss_summary_per_service{quantile="0.10",ser="ABC"} 33
+miss_summary_per_service{quantile="0.50",ser="ABC"} 43
+miss_summary_per_service_count{ser="ABC"} 1000
+miss_summary_per_service_sum{ser="ABC"} 48000
+# HELP miss_summary_per_service_region miss_summary_per_service_region
+# TYPE miss_summary_per_service_region summary
+miss_summary_per_service_region{quantile="0.10",reg="North America",ser="ABC"} 32
+miss_summary_per_service_region{quantile="0.50",reg="North America",ser="ABC"} 40
+miss_summary_per_service_region_count{reg="North America",ser="ABC"} 400
+miss_summary_per_service_region_sum{reg="North America",ser="ABC"} 19000
+miss_summary_per_service_region{quantile="0.10",reg="South America",ser="ABC"} 33
+miss_summary_per_service_region{quantile="0.50",reg="South America",ser="ABC"} 43
+miss_summary_per_service_region_count{reg="South America",ser="ABC"} 600
+miss_summary_per_service_region_sum{reg="South America",ser="ABC"} 29000
+# HELP miss_summary_per_service_pop miss_summary_per_service_pop
+# TYPE miss_summary_per_service_pop summary
+miss_summary_per_service_pop{quantile="0.10",pop="IAD",reg="North America",ser="ABC"} 32
+miss_summary_per_service_pop{quantile="0.50",pop="IAD",reg="North America",ser="ABC"} 40
+miss_summary_per_service_pop_count{pop="IAD",reg="North America",ser="ABC"} 400
+miss_summary_per_service_pop_sum{pop="IAD",reg="North America",ser="ABC"} 19000
+miss_summary_per_service_pop{quantile="0.10",pop="SCL",reg="South America",ser="ABC"} 33
+miss_summary_per_service_pop{quantile="0.50",pop="SCL",reg="South America",ser="ABC"} 43
+miss_summary_per_service_pop_count{pop="SCL",reg="South America",ser="ABC"} 600
+miss_summary_per_service_pop_sum{pop="SCL",reg="South America",ser="ABC"} 29000
+# HELP last_timestamp last_timestamp
+# TYPE last_timestamp counter
+last_timestamp{ser="ABC"} 1703049043
