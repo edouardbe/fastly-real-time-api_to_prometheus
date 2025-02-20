@@ -1,43 +1,36 @@
+@Library('jenkins-shared-library') _
+
 pipeline {
   agent any
-  
   environment {
-    GIT_SHORT_HASH = GIT_COMMIT.take(7)
-    PKG_REVISION = "$GIT_SHORT_HASH-$BUILD_NUMBER"
-    DOCKER_REPO = 'mubi/fastly-metrics-scraper'
-    DOCKER_BUILDKIT = 1
-    DOCKER_LOCAL_TAG = "$PKG_REVISION"
+    CI = true
+
+    AWS_ACCOUNT_ID            = "211418496259"
+    AWS_REGION                = "us-east-1"
+    AWS_DEFAULT_REGION        = "${AWS_REGION}"
+
+    ECR_REGISTRY              = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+    ECR_REGISTRY_URL          = "https://${ECR_REGISTRY}"
+    ECR_REGISTRY_CREDENTIALS  = "ecr:us-east-1:ecr-ci"
+
+    INFRA_CLI_IMAGE_VERSION   = "0.0.14"
+    INFRA_CLI_IMAGE           = "${ECR_REGISTRY}/mubi/images/infra-cli:${INFRA_CLI_IMAGE_VERSION}"
   }
-
   stages {
-    stage('Build Image') {
-      steps {
-        sh 'docker build --progress=plain -t "$DOCKER_REPO:$DOCKER_LOCAL_TAG" .'
-      }
-    }
-    stage('Docker login') {
-      environment {
-        DOCKER_HUB = credentials('dockerhub-mubiadmin')
-      }
-      steps {
-        sh 'echo "${DOCKER_HUB_PSW}" | docker login -u "${DOCKER_HUB_USR}" --password-stdin'
-      }
-    }
-    stage('Push Docker image') {
-      steps {
-        sh 'docker push "$DOCKER_REPO:$DOCKER_LOCAL_TAG"'
-
-        sh 'docker tag "$DOCKER_REPO:$DOCKER_LOCAL_TAG" "$DOCKER_REPO:$BRANCH_NAME"'
-        sh 'docker push "$DOCKER_REPO:$BRANCH_NAME"'
-      }
-    }
-    stage('Push Docker image "latest" tag') {
-      when {
-        branch 'master'
+    stage('Release: Container image') {
+      agent {
+        docker {
+          image                 env.INFRA_CLI_IMAGE
+          registryUrl           env.ECR_REGISTRY_URL
+          registryCredentialsId env.ECR_REGISTRY_CREDENTIALS
+          args                  '--user 1000 --entrypoint='
+        }
       }
       steps {
-        sh 'docker tag "$DOCKER_REPO:$DOCKER_LOCAL_TAG" "$DOCKER_REPO:latest"'
-        sh 'docker push "$DOCKER_REPO:latest"'
+        script {
+          buildImage()
+          pushImage()
+        }
       }
     }
   }
