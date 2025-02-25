@@ -9,4 +9,3 @@ RUN npm ci
 COPY . /app
 
 ENTRYPOINT ["npm", "run", "start", "--"]
-CMD ["--configuration-file=../config.txt", "-v"]
