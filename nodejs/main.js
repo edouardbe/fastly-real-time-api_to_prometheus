@@ -160,7 +160,7 @@ function getAllFastlyServicesPromise() {
       })
     )
     .finally(() => {
-      logger.info(`Execution time to retrieve the Fastly Services from API: ${Date.now() - start} ms`);
+      logger.debug(`Execution time to retrieve the Fastly Services from API: ${Date.now() - start} ms`);
     });
 }
 
@@ -182,7 +182,7 @@ function getRealTimeMetricsPromise(service, timestamp) {
     .get(`https://rt.fastly.com/v1/channel/${service.id}/ts/${timestamp}`)
     .then((res) => res.data.Data)
     .finally(() => {
-      logger.info(`Execution time to retrieve the Fastly Real Time Data for Service ${service.id} from API: ${Date.now() - start} ms`);
+      logger.debug(`Execution time to retrieve the Fastly Real Time Data for Service ${service.id} from API: ${Date.now() - start} ms`);
     });
 }
 
@@ -199,7 +199,7 @@ function getAllFastlyPoPsPromise() {
       }, {})
     )
     .finally(() => {
-      logger.info(`Execution time to retrieve the Fastly PoPs from API: ${Date.now() - start} ms`);
+      logger.debug(`Execution time to retrieve the Fastly PoPs from API: ${Date.now() - start} ms`);
     });
 }
 
@@ -217,7 +217,7 @@ function loadPreviousDataPromise(filepath) {
             var obj = JSON.parse(data);
 
             if (obj.timestamp < new Date().setHours(0, 0, 0, 0)) {
-              logger.info("erasing previous counter");
+              logger.debug("erasing previous counter");
               resolve({});
             } else {
               resolve(obj);
@@ -231,7 +231,7 @@ function loadPreviousDataPromise(filepath) {
       resolve({});
     }
   }).finally(() => {
-    logger.info(`Execution time to load the previous data from file: ${Date.now() - start} ms`);
+    logger.debug(`Execution time to load the previous data from file: ${Date.now() - start} ms`);
   });
 }
 
@@ -289,7 +289,7 @@ function mergeData(previousData, newData) {
   }, previousData || { datacenter: {} });
 
   logger.debug("mergedData :", mergedData);
-  logger.info(`Execution time to merge the data: ${Date.now() - start} ms`);
+  logger.debug(`Execution time to merge the data: ${Date.now() - start} ms`);
   return mergedData;
 }
 
@@ -651,7 +651,7 @@ function json2prometheus(mergedDataArray, pops, services) {
     }
   });
 
-  logger.info(`Execution time to prepare the prometheus data: ${Date.now() - start} ms`);
+  logger.debug(`Execution time to prepare the prometheus data: ${Date.now() - start} ms`);
   return result.join("\n");
 }
 
@@ -699,7 +699,7 @@ function mainPromise(filepath, isBackgroundCall) {
       ) => prometheusData
     )
     .finally(() => {
-      logger.info(`execution time to call mainPromise in ${isBackgroundCall ? "backgound" : "foreground"}: ${Date.now() - start} ms`);
+      logger.debug(`execution time to call mainPromise in ${isBackgroundCall ? "backgound" : "foreground"}: ${Date.now() - start} ms`);
     });
 }
 
