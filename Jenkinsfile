@@ -38,7 +38,7 @@ pipeline {
     success {
       slackSend baseUrl: 'https://mubi.slack.com/services/hooks/jenkins-ci/',
         botUser: true,
-        channel: '#infra-notifications',
+        channel: '#infra-builds',
         color: 'good',
         message: "Build '${env.JOB_NAME}' - '[${env.BUILD_NUMBER}]' Successful '${env.RUN_DISPLAY_URL}'",
         teamDomain: 'mubi',
@@ -47,7 +47,7 @@ pipeline {
     failure {
       slackSend baseUrl: 'https://mubi.slack.com/services/hooks/jenkins-ci/',
         botUser: true,
-        channel: '#infra-notifications',
+        channel: '#infra-builds',
         color: 'danger',
         message: "Build '${env.JOB_NAME}' - '[${env.BUILD_NUMBER}]' Failed '${env.RUN_DISPLAY_URL}'",
         teamDomain: 'mubi',
