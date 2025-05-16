@@ -8,7 +8,7 @@ WORKDIR /app
 COPY ./package*.json .
 
 # Install the application dependencies
-RUN npm install
+RUN npm install --omit=dev --no-optional
 
 # Copy the content of the local src directory to the working directory
 COPY . .
