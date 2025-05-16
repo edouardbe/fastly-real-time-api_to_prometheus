@@ -1,25 +1,25 @@
 const winston = require("winston");
 const path = require("path");
 
-function createLogger(logFilename, logLocation, logLevel, logConsole) {
+function createLogger(logFilename, logLocation, logLevel, logFormat) {
   const transports = [
-    new winston.transports.File({
-      filename: path.join(logLocation, logFilename),
-    }),
+    new winston.transports.Console({
+      format: logFormat == "simple" ? winston.format.combine(winston.format.colorize(), winston.format.simple()) : winston.format.json(),
+    })
   ];
 
-  // Add console transport in development environment
-  if (logConsole == true) {
+  // Add file transport when log filename is specified
+  if (logFilename != "") {
     transports.push(
-      new winston.transports.Console({
-        format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
-      })
+      new winston.transports.File({
+        filename: path.join(logLocation, logFilename),
+      }),
     );
   }
 
   const logger = winston.createLogger({
     level: logLevel,
-    format: winston.format.combine(winston.format.splat(), winston.format.simple()),
+    format: winston.format.combine(winston.format.splat(), logFormat == "simple" ? winston.format.simple() : winston.format.json()),
     transports: transports,
   });
 

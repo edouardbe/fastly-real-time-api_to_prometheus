@@ -6,3 +6,4 @@ config.txt
 grafana/dashboards/fastly-real-time-api-dashboard.json
 .idea
 **/node_modules/**/*
+.vscode

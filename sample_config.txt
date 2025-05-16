@@ -10,8 +10,11 @@ FRTATP_FASTLY_KEY=
 # set the path for the nodejs express server to listen to. Default /metrics
 #FRTATP_NODEJS_PATH=/metrics
 
-# set verbose mode (0 or 1)
-FRTATP_VERBOSE=0
+# set verbose mode (any value will enable debug logs)
+#FRTATP_VERBOSE=0
+
+# set log format (simple or json)
+#FRTATP_LOG_FORMAT=simple
 
 # set the logs directory (default /var/log)
 #FRTATP_LOGS_DIR=/var/log

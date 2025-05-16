@@ -50,15 +50,14 @@ const definitions = [
   {
     name: "logs-file",
     type: String,
-    defaultIfMissing: "fastly-real-time-api-to-prometheus.log",
-    desc: "the file to write the logs",
+    defaultIfMissing: "",
+    desc: "the file to write the logs (logging to file disabled when empty)",
   },
   {
-    name: "logs-console",
-    type: Boolean,
-    defaultIfMissing: false,
-    defaultIfPresent: true,
-    desc: "additionally write the logs in the console too",
+    name: "log-format",
+    type: String,
+    defaultIfMissing: "simple",
+    desc: "the format of the logs to use - can be either 'simple' or 'json'",
   },
   {
     name: "nodejs-port",
@@ -131,7 +130,7 @@ const options = {
 };
 
 const parsedArguments = argumentParser(definitions, options);
-const logger = createLogger(parsedArguments.get("logs-file"), parsedArguments.get("logs-dir"), parsedArguments.get("verbose") == true ? "debug" : "info", parsedArguments.get("logs-console"));
+const logger = createLogger(parsedArguments.get("logs-file"), parsedArguments.get("logs-dir"), parsedArguments.get("verbose") == true ? "debug" : "info", parsedArguments.get("log-format") == "json" ? "json" : "simple");
 
 logger.info(`Start at ${new Date()}`);
 
