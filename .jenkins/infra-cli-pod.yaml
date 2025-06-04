@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    karpenter.sh/do-not-disrupt: "true"
+spec:
+  serviceAccountName: jenkins
+  containers:
+    - name: infra-cli
+      image: 211418496259.dkr.ecr.us-east-1.amazonaws.com/mubi/images/infra-cli:1.0.4
+      imagePullPolicy: IfNotPresent
+      args:
+        - infinity
+      command:
+        - sleep
+      resources:
+        limits:
+          memory: "256Mi"
+          cpu: "100m"
+        requests:
+          memory: "256Mi"
+          cpu: "100m"
+      env:
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: jenkins-credentials
+              key: github-devops-token
+      tty: false

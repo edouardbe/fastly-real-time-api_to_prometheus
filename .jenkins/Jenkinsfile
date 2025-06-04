@@ -1,0 +1,33 @@
+@Library('jenkins-shared-library@v2') _
+
+pipeline {
+  agent {
+    kubernetes {
+      defaultContainer 'infra-cli'
+      yamlFile '.jenkins/infra-cli-pod.yaml'
+    }
+  }
+
+  environment {
+    SLACK_CHANNEL = '#infra-builds'
+  }
+
+  stages {
+    stage('Build and Push Container image') {
+      parallel {
+        stage('image with Kaniko') {
+          steps {
+            buildAndPushImageWithKaniko()
+          }
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      mubiSlackSend(env.SLACK_CHANNEL)
+      cleanWs()
+    }
+  }
+}
