@@ -17,7 +17,7 @@ pipeline {
       parallel {
         stage('image with Kaniko') {
           steps {
-            buildAndPushImageWithKaniko()
+            buildAndPushImageWithKaniko(dockerfile: "nodejs/Dockerfile", context: "nodejs")
           }
         }
       }
