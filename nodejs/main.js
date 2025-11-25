@@ -197,6 +197,10 @@ function getAllFastlyPoPsPromise() {
         return acc;
       }, {})
     )
+    .catch((err) => {
+      logger.error("Error to retrieve the Fastly PoPs from API: ", err);
+      return {};
+    })
     .finally(() => {
       logger.debug(`Execution time to retrieve the Fastly PoPs from API: ${Date.now() - start} ms`);
     });
@@ -343,7 +347,8 @@ function json2prometheus(mergedDataArray, pops, services) {
   result.push(`# HELP ${prefix}pops ${prefix}pops`);
   result.push(`# TYPE ${prefix}pops gauge`);
   Object.entries(pops).forEach(([k, v]) => {
-    result.push(`${prefix}pops{pop="${k}",reg="${v.region}"} 1`);
+    var region = v.region || "unknown";
+    result.push(`${prefix}pops{pop="${k}",reg="${region}"} 1`);
   });
 
   // need to transform the mergedDataArray [{ "recorded" : 123 , "datacenter" :{ "ABC"" : { metrics }}}] into { metric : [{service:, pop: , value: }]}}
@@ -388,12 +393,14 @@ function json2prometheus(mergedDataArray, pops, services) {
           pops: {},
           regions: {},
         };
-        missHistogram[v.service]["regions"][pops[v.pop].region] = missHistogram[v.service]["regions"][pops[v.pop].region] || {
+        var pop = v.pop || "unknown";
+        var region = pops[pop]?.region || "unknown";
+        missHistogram[v.service]["regions"][region] = missHistogram[v.service]["regions"][region] || {
           buckets: {},
           count: 0,
           sum: 0,
         };
-        missHistogram[v.service]["pops"][v.pop] = missHistogram[v.service]["pops"][v.pop] || { buckets: {}, count: 0, sum: 0 };
+        missHistogram[v.service]["pops"][pop] = missHistogram[v.service]["pops"][pop] || { buckets: {}, count: 0, sum: 0 };
 
         Object.entries(v.value).forEach(([bucketKey, bucketValue]) => {
           var bucketInt = parseInt(bucketKey);
@@ -401,13 +408,13 @@ function json2prometheus(mergedDataArray, pops, services) {
           missHistogram[v.service]["overall"]["count"] += bucketValue;
           missHistogram[v.service]["overall"]["sum"] += bucketValue * bucketInt;
 
-          missHistogram[v.service]["regions"][pops[v.pop].region]["buckets"][bucketInt] = (missHistogram[v.service]["regions"][pops[v.pop].region]["buckets"][bucketInt] || 0) + bucketValue;
-          missHistogram[v.service]["regions"][pops[v.pop].region]["count"] += bucketValue;
-          missHistogram[v.service]["regions"][pops[v.pop].region]["sum"] += bucketValue * bucketInt;
+          missHistogram[v.service]["regions"][region]["buckets"][bucketInt] = (missHistogram[v.service]["regions"][region]["buckets"][bucketInt] || 0) + bucketValue;
+          missHistogram[v.service]["regions"][region]["count"] += bucketValue;
+          missHistogram[v.service]["regions"][region]["sum"] += bucketValue * bucketInt;
 
-          missHistogram[v.service]["pops"][v.pop]["buckets"][bucketInt] = (missHistogram[v.service]["pops"][v.pop]["buckets"][bucketInt] || 0) + bucketValue;
-          missHistogram[v.service]["pops"][v.pop]["count"] += bucketValue;
-          missHistogram[v.service]["pops"][v.pop]["sum"] += bucketValue * bucketInt;
+          missHistogram[v.service]["pops"][pop]["buckets"][bucketInt] = (missHistogram[v.service]["pops"][pop]["buckets"][bucketInt] || 0) + bucketValue;
+          missHistogram[v.service]["pops"][pop]["count"] += bucketValue;
+          missHistogram[v.service]["pops"][pop]["sum"] += bucketValue * bucketInt;
         });
       });
       logger.debug("histogram :", missHistogram);
@@ -459,7 +466,7 @@ function json2prometheus(mergedDataArray, pops, services) {
           Object.entries(serviceObject["pops"]).forEach(([pop, popObject]) => {
             var sortedBucketKeys = Object.keys(popObject["buckets"]).sort((a, b) => a - b);
             var acc = 0;
-            var region = pops[pop].region;
+            var region = pops[pop]?.region || "unknown";
             for (let key of sortedBucketKeys) {
               acc += popObject["buckets"][key];
               tempResult.push(`${prefix}${metricName}_per_service_pop_bucket{pop="${pop}",reg="${region}",ser="${service}",le="${key}"} ${acc}`);
@@ -550,47 +557,54 @@ function json2prometheus(mergedDataArray, pops, services) {
         result.push(`# TYPE ${prefix}${newMetricName}_per_service_pop summary`);
         Object.entries(percentiles).forEach(([service, serviceObject]) => {
           Object.entries(serviceObject["pops"]).forEach(([pop, popObject]) => {
+            var region = pops[pop]?.region || "unknown";
             Object.entries(popObject["percentiles"]).forEach(([p, value]) => {
-              result.push(`${prefix}${newMetricName}_per_service_pop{quantile="${((1.0 * p) / 100).toFixed(2)}",pop="${pop}",reg="${pops[pop].region}",ser="${service}"} ${value}`);
+              result.push(`${prefix}${newMetricName}_per_service_pop{quantile="${((1.0 * p) / 100).toFixed(2)}",pop="${pop}",reg="${region}",ser="${service}"} ${value}`);
             });
-            result.push(`${prefix}${newMetricName}_per_service_pop_count{pop="${pop}",reg="${pops[pop].region}",ser="${service}"} ${popObject["count"]}`);
-            result.push(`${prefix}${newMetricName}_per_service_pop_sum{pop="${pop}",reg="${pops[pop].region}",ser="${service}"} ${popObject["sum"]}`);
+            result.push(`${prefix}${newMetricName}_per_service_pop_count{pop="${pop}",reg="${region}",ser="${service}"} ${popObject["count"]}`);
+            result.push(`${prefix}${newMetricName}_per_service_pop_sum{pop="${pop}",reg="${region}",ser="${service}"} ${popObject["sum"]}`);
           });
         });
       }
     } else if (metricName.indexOf("status_") == 0) {
       var code = metricName.substring("status_".length);
       values.forEach((v) => {
+        var pop = v.pop || "unknown";
         status[v.service] = status[v.service] || {};
-        status[v.service][v.pop] = status[v.service][v.pop] || {};
-        status[v.service][v.pop][code] = v.value;
+        status[v.service][pop] = status[v.service][pop] || {};
+        status[v.service][pop][code] = v.value;
       });
     } else if (metricName.indexOf("object_size_") == 0) {
       var size = metricName.substring("object_size_".length);
       values.forEach((v) => {
+        var pop = v.pop || "unknown";
         objectSize[v.service] = objectSize[v.service] || {};
-        objectSize[v.service][v.pop] = objectSize[v.service][v.pop] || {};
-        objectSize[v.service][v.pop][size] = v.value;
+        objectSize[v.service][pop] = objectSize[v.service][pop] || {};
+        objectSize[v.service][pop][size] = v.value;
       });
     } else if (metricName.indexOf("tls_") == 0) {
       var code = metricName.substring("tls_".length);
       values.forEach((v) => {
+        var pop = v.pop || "unknown";
         tls[v.service] = tls[v.service] || {};
-        tls[v.service][v.pop] = tls[v.service][v.pop] || {};
-        tls[v.service][v.pop][code] = v.value;
+        tls[v.service][pop] = tls[v.service][pop] || {};
+        tls[v.service][pop][code] = v.value;
       });
     } else if (metricName == "tls") {
       var code = "XXX";
       values.forEach((v) => {
+        var pop = v.pop || "unknown";
         tls[v.service] = tls[v.service] || {};
-        tls[v.service][v.pop] = tls[v.service][v.pop] || {};
-        tls[v.service][v.pop][code] = v.value;
+        tls[v.service][pop] = tls[v.service][pop] || {};
+        tls[v.service][pop][code] = v.value;
       });
     } else {
       var tempResult = [];
       values.forEach((v) => {
         if (v.value != 0 || parsedArguments.get("ignore-counter-zero") == false) {
-          tempResult.push(`${prefix}${metricName}{pop="${v.pop}",reg="${pops[v.pop].region}",ser="${v.service}"} ${v.value}`);
+          var pop = v.pop || "unknown";
+          var region = pops[pop]?.region || "unknown";
+          tempResult.push(`${prefix}${metricName}{pop="${pop}",reg="${region}",ser="${v.service}"} ${v.value}`);
         }
       });
 
@@ -609,7 +623,8 @@ function json2prometheus(mergedDataArray, pops, services) {
     Object.entries(status).forEach(([service, s_pops]) => {
       Object.entries(s_pops).forEach(([pop, values]) => {
         Object.entries(values).forEach(([code, value]) => {
-          result.push(`${prefix}status{pop="${pop}",reg="${pops[pop].region}",ser="${service}",code="${code}"} ${value}`);
+          var region = pops[pop]?.region || "unknown";
+          result.push(`${prefix}status{pop="${pop}",reg="${region}",ser="${service}",code="${code}"} ${value}`);
         });
       });
     });
@@ -622,7 +637,8 @@ function json2prometheus(mergedDataArray, pops, services) {
     Object.entries(objectSize).forEach(([service, s_pops]) => {
       Object.entries(s_pops).forEach(([pop, values]) => {
         Object.entries(values).forEach(([size, value]) => {
-          result.push(`${prefix}object_size{pop="${pop}",reg="${pops[pop].region}",ser="${service}",size="${size}"} ${value}`);
+          var region = pops[pop]?.region || "unknown";
+          result.push(`${prefix}object_size{pop="${pop}",reg="${region}",ser="${service}",size="${size}"} ${value}`);
         });
       });
     });
@@ -635,7 +651,8 @@ function json2prometheus(mergedDataArray, pops, services) {
     Object.entries(tls).forEach(([service, s_pops]) => {
       Object.entries(s_pops).forEach(([pop, values]) => {
         Object.entries(values).forEach(([version, value]) => {
-          result.push(`${prefix}tls{pop="${pop}",reg="${pops[pop].region}",ser="${service}",version="${version}"} ${value}`);
+          var region = pops[pop]?.region || "unknown";
+          result.push(`${prefix}tls{pop="${pop}",reg="${region}",ser="${service}",version="${version}"} ${value}`);
         });
       });
     });
